@@ -34,61 +34,79 @@ except:
     ui_device = None
 
 # --- 3. MASTER STRATAGEM DATABASE ---
-STRATAGEM_DB = [
-    {"name": "Reinforce", "icon": "icons/Reinforce.svg", "seq": [UP, DN, RT, LT, UP]},
-    {"name": "SOS Beacon", "icon": "icons/SOS_Beacon.svg", "seq": [UP, DN, LT, UP]},
-    {"name": "Resupply", "icon": "icons/Resupply.svg", "seq": [DN, DN, UP, RT]},
-    {"name": "Eagle Rearm", "icon": "icons/Eagle_Rearm.svg", "seq": [UP, UP, LT, UP, RT]},
-    {"name": "Machine Gun", "icon": "icons/Machine_Gun.svg", "seq": [DN, LT, DN, UP, RT]},
-    {"name": "Anti-Materiel Rifle", "icon": "icons/Anti-Materiel_Rifle.svg", "seq": [DN, LT, RT, UP, DN]},
-    {"name": "Stalwart", "icon": "icons/Stalwart.svg", "seq": [DN, LT, DN, UP, UP, LT]},
-    {"name": "Expendable Anti-Tank", "icon": "icons/Expendable_Anti-Tank.svg", "seq": [DN, DN, LT, UP, RT]},
-    {"name": "Recoilless Rifle", "icon": "icons/Recoilless_Rifle.svg", "seq": [DN, LT, RT, RT, LT]},
-    {"name": "Flamethrower", "icon": "icons/Flamethrower.svg", "seq": [DN, LT, UP, DN, UP]},
-    {"name": "Autocannon", "icon": "icons/Autocannon.svg", "seq": [DN, LT, DN, UP, UP, RT]},
-    {"name": "Railgun", "icon": "icons/Railgun.svg", "seq": [DN, RT, DN, UP, LT, RT]},
-    {"name": "Spear", "icon": "icons/Spear.svg", "seq": [DN, DN, UP, DN, DN]},
-    {"name": "Grenade Launcher", "icon": "icons/Grenade_Launcher.svg", "seq": [DN, LT, UP, LT, DN]},
-    {"name": "Laser Cannon", "icon": "icons/Laser_Cannon.svg", "seq": [DN, LT, DN, UP, LT]},
-    {"name": "Arc Thrower", "icon": "icons/Arc_Thrower.svg", "seq": [DN, RT, DN, UP, LT, LT]},
-    {"name": "Quasar Cannon", "icon": "icons/Quasar_Cannon.svg", "seq": [DN, DN, UP, LT, RT]},
-    {"name": "Orbital Gatling", "icon": "icons/Orbital_Gatling_Barrage.svg", "seq": [RT, DN, LT, UP, UP]},
-    {"name": "Orbital Airburst", "icon": "icons/Orbital_Airburst_Strike.svg", "seq": [RT, RT, RT]},
-    {"name": "Orbital 120mm HE", "icon": "icons/Orbital_120mm_HE_Barrage.svg", "seq": [RT, RT, DN, LT, RT, DN]},
-    {"name": "Orbital 380mm HE", "icon": "icons/Orbital_380mm_HE_Barrage.svg", "seq": [RT, DN, UP, UP, LT, DN, DN]},
-    {"name": "Orbital Walking Barrage", "icon": "icons/Orbital_Walking_Barrage.svg", "seq": [RT, DN, RT, DN, RT, DN]},
-    {"name": "Orbital Laser", "icon": "icons/Orbital_Laser.svg", "seq": [RT, DN, UP, RT, DN]},
-    {"name": "Orbital Railcannon", "icon": "icons/Orbital_Railcannon_Strike.svg", "seq": [RT, UP, DN, DN, RT]},
-    {"name": "Orbital Precision Strike", "icon": "icons/Orbital_Precision_Strike.svg", "seq": [RT, RT, UP]},
-    {"name": "Orbital Gas Strike", "icon": "icons/Orbital_Gas_Strike.svg", "seq": [RT, RT, DN, RT]},
-    {"name": "Orbital EMS Strike", "icon": "icons/Orbital_EMS_Strike.svg", "seq": [RT, RT, LT, DN]},
-    {"name": "Orbital Smoke Strike", "icon": "icons/Orbital_Smoke_Strike.svg", "seq": [RT, RT, DN, UP]},
-    {"name": "Eagle Strafing Run", "icon": "icons/Eagle_Strafing_Run.svg", "seq": [UP, RT, RT]},
-    {"name": "Eagle Airstrike", "icon": "icons/Eagle_Airstrike.svg", "seq": [UP, RT, DN, RT]},
-    {"name": "Eagle Cluster Bomb", "icon": "icons/Eagle_Cluster_Bomb.svg", "seq": [UP, RT, DN, DN, RT]},
-    {"name": "Eagle Napalm", "icon": "icons/Eagle_Napalm_Airstrike.svg", "seq": [UP, RT, DN, UP]},
-    {"name": "Eagle Smoke", "icon": "icons/Eagle_Smoke_Strike.svg", "seq": [UP, RT, UP, DN]},
-    {"name": "Eagle 110mm Rockets", "icon": "icons/Eagle_110mm_Rocket_Pods.svg", "seq": [UP, RT, UP, LT]},
-    {"name": "Eagle 500kg Bomb", "icon": "icons/Eagle_500kg_Bomb.svg", "seq": [UP, RT, DN, DN, DN]},
-    {"name": "HMG Emplacement", "icon": "icons/HMG_Emplacement.svg", "seq": [DN, UP, LT, RT, RT, LT]},
-    {"name": "Shield Gen Relay", "icon": "icons/Shield_Generator_Relay.svg", "seq": [DN, DN, LT, RT, LT, RT]},
-    {"name": "Tesla Tower", "icon": "icons/Tesla_Tower.svg", "seq": [DN, UP, RT, UP, LT, RT]},
-    {"name": "Anti-Personnel Minefield", "icon": "icons/Anti-Personnel_Minefield.svg", "seq": [DN, LT, UP, RT]},
-    {"name": "Supply Pack", "icon": "icons/Supply_Pack.svg", "seq": [DN, LT, DN, UP, UP, RT]},
-    {"name": "Jump Pack", "icon": "icons/Jump_Pack.svg", "seq": [DN, UP, UP, DN, UP]},
-    {"name": "Incendiary Mines", "icon": "icons/Incendiary_Mines.svg", "seq": [DN, LT, LT, DN]},
-    {"name": "Guard Dog Rover", "icon": "icons/Guard_Dog_Rover.svg", "seq": [DN, UP, LT, UP, RT, RT]},
-    {"name": "Ballistic Shield", "icon": "icons/Ballistic_Shield_Backpack.svg", "seq": [DN, LT, DN, DN, UP, LT]},
-    {"name": "Shield Gen Pack", "icon": "icons/Shield_Generator_Pack.svg", "seq": [DN, UP, LT, RT, LT, RT]},
-    {"name": "Machine Gun Sentry", "icon": "icons/Machine_Gun_Sentry.svg", "seq": [DN, UP, RT, RT, UP]},
-    {"name": "Gatling Sentry", "icon": "icons/Gatling_Sentry.svg", "seq": [DN, UP, RT, LT]},
-    {"name": "Mortar Sentry", "icon": "icons/Mortar_Sentry.svg", "seq": [DN, UP, RT, RT, DN]},
-    {"name": "Guard Dog", "icon": "icons/Guard_Dog.svg", "seq": [DN, UP, LT, UP, RT, DN]},
-    {"name": "Autocannon Sentry", "icon": "icons/Autocannon_Sentry.svg", "seq": [DN, UP, RT, UP, LT, UP]},
-    {"name": "Rocket Sentry", "icon": "icons/Rocket_Sentry.svg", "seq": [DN, UP, RT, RT, LT]},
-    {"name": "EMS Sentry", "icon": "icons/EMS_Mortar_Sentry.svg", "seq": [DN, UP, RT, DN, RT]},
-    {"name": "Patriot Exosuit", "icon": "icons/Patriot_Exosuit.svg", "seq": [LT, DN, RT, UP, LT, DN, DN]},
-]
+# Constants for your sequence format
+# UP, DN, LT, RT = "UP", "DN", "LT", "RT"
+
+STRATAGEM_DB = {
+    "Standard": [
+        {"name": "Machine Gun", "icon": "icons/Machine_Gun.svg", "seq": [DN, LT, DN, UP, RT]},
+        {"name": "Anti-Materiel Rifle", "icon": "icons/Anti-Materiel_Rifle.svg", "seq": [DN, LT, RT, UP, DN]},
+        {"name": "Stalwart", "icon": "icons/Stalwart.svg", "seq": [DN, LT, DN, UP, UP, LT]},
+        {"name": "Expendable Anti-Tank", "icon": "icons/Expendable_Anti-Tank.svg", "seq": [DN, DN, LT, UP, RT]},
+        {"name": "Recoilless Rifle", "icon": "icons/Recoilless_Rifle.svg", "seq": [DN, LT, RT, RT, LT]},
+        {"name": "Flamethrower", "icon": "icons/Flamethrower.svg", "seq": [DN, LT, UP, DN, UP]},
+        {"name": "Autocannon", "icon": "icons/Autocannon.svg", "seq": [DN, LT, DN, UP, UP, RT]},
+        {"name": "Heavy Machine Gun", "icon": "icons/Heavy_Machine_Gun.svg", "seq": [DN, LT, UP, DN, DN]},
+        {"name": "Railgun", "icon": "icons/Railgun.svg", "seq": [DN, RT, DN, UP, LT, RT]},
+        {"name": "Spear", "icon": "icons/Spear.svg", "seq": [DN, DN, UP, DN, DN]},
+        {"name": "Orbital Precision Strike", "icon": "icons/Orbital_Precision_Strike.svg", "seq": [RT, RT, UP]},
+        {"name": "Orbital Gatling Barrage", "icon": "icons/Orbital_Gatling_Barrage.svg", "seq": [RT, DN, LT, UP, UP]},
+        {"name": "Orbital Airburst Strike", "icon": "icons/Orbital_Airburst_Strike.svg", "seq": [RT, RT, RT]},
+        {"name": "Orbital 120MM HE Barrage", "icon": "icons/Orbital_120MM_HE_Barrage.svg", "seq": [RT, RT, DN, LT, RT, DN]},
+        {"name": "Orbital 380MM HE Barrage", "icon": "icons/Orbital_380MM_HE_Barrage.svg", "seq": [RT, DN, UP, UP, LT, DN, DN]},
+        {"name": "Orbital Walking Barrage", "icon": "icons/Orbital_Walking_Barrage.svg", "seq": [RT, DN, RT, DN, RT, DN]},
+        {"name": "Orbital Laser", "icon": "icons/Orbital_Laser.svg", "seq": [RT, DN, UP, RT, DN]},
+        {"name": "Orbital Railcannon Strike", "icon": "icons/Orbital_Railcannon_Strike.svg", "seq": [RT, UP, DN, DN, RT]},
+        {"name": "Orbital Gas Strike", "icon": "icons/Orbital_Gas_Strike.svg", "seq": [RT, RT, DN, RT]},
+        {"name": "Orbital EMS Strike", "icon": "icons/Orbital_EMS_Strike.svg", "seq": [RT, RT, LT, DN]},
+        {"name": "Orbital Smoke Strike", "icon": "icons/Orbital_Smoke_Strike.svg", "seq": [RT, RT, DN, UP]},
+        {"name": "Orbital Napalm Barrage", "icon": "icons/Orbital_Napalm_Barrage.svg", "seq": [RT, RT, DN, UP, DN]},
+        {"name": "Eagle Strafing Run", "icon": "icons/Eagle_Strafing_Run.svg", "seq": [UP, RT, RT]},
+        {"name": "Eagle Airstrike", "icon": "icons/Eagle_Airstrike.svg", "seq": [UP, RT, DN, RT]},
+        {"name": "Eagle Cluster Bomb", "icon": "icons/Eagle_Cluster_Bomb.svg", "seq": [UP, RT, DN, DN, RT]},
+        {"name": "Eagle Napalm Airstrike", "icon": "icons/Eagle_Napalm_Airstrike.svg", "seq": [UP, RT, DN, UP]},
+        {"name": "Eagle Smoke Strike", "icon": "icons/Eagle_Smoke_Strike.svg", "seq": [UP, RT, UP, DN]},
+        {"name": "Eagle 110MM Rocket Pods", "icon": "icons/Eagle_110MM_Rocket_Pods.svg", "seq": [UP, RT, UP, LT]},
+        {"name": "Eagle 500KG Bomb", "icon": "icons/Eagle_500KG_Bomb.svg", "seq": [UP, RT, DN, DN, DN]},
+        {"name": "Supply Pack", "icon": "icons/Supply_Pack.svg", "seq": [DN, LT, DN, UP, UP, DN]},
+        {"name": "Jump Pack", "icon": "icons/Jump_Pack.svg", "seq": [DN, UP, UP, DN, UP]},
+        {"name": "Guard Dog Rover", "icon": "icons/Guard_Dog_Rover.svg", "seq": [DN, UP, LT, UP, RT, RT]},
+        {"name": "Guard Dog", "icon": "icons/Guard_Dog.svg", "seq": [DN, UP, LT, UP, RT, DN]},
+        {"name": "Ballistic Shield", "icon": "icons/Ballistic_Shield_Backpack.svg", "seq": [DN, LT, DN, DN, UP, LT]},
+        {"name": "Shield Generator Pack", "icon": "icons/Shield_Generator_Pack.svg", "seq": [DN, UP, LT, RT, LT, RT]},
+        {"name": "Arc Thrower", "icon": "icons/Arc_Thrower.svg", "seq": [DN, RT, DN, UP, LT, LT]},
+        {"name": "Quasar Cannon", "icon": "icons/Quasar_Cannon.svg", "seq": [DN, DN, UP, LT, RT]},
+        {"name": "Sterilizer", "icon": "icons/Sterilizer.svg", "seq": [DN, LT, DN, DN, UP, LT]},
+        {"name": "Tesla Tower", "icon": "icons/Tesla_Tower.svg", "seq": [DN, UP, RT, UP, LT, RT]},
+        {"name": "Anti-Personnel Minefield", "icon": "icons/Anti-Personnel_Minefield.svg", "seq": [DN, LT, UP, RT]},
+        {"name": "Incendiary Mines", "icon": "icons/Incendiary_Mines.svg", "seq": [DN, LT, LT, DN]},
+        {"name": "Anti-Tank Mines", "icon": "icons/Anti-Tank_Mines.svg", "seq": [DN, LT, UP, UP]},
+        {"name": "Machine Gun Sentry", "icon": "icons/Machine_Gun_Sentry.svg", "seq": [DN, UP, RT, RT, UP]},
+        {"name": "Gatling Sentry", "icon": "icons/Gatling_Sentry.svg", "seq": [DN, UP, RT, LT]},
+        {"name": "Mortar Sentry", "icon": "icons/Mortar_Sentry.svg", "seq": [DN, UP, RT, RT, DN]},
+        {"name": "Autocannon Sentry", "icon": "icons/Autocannon_Sentry.svg", "seq": [DN, UP, RT, UP, LT, UP]},
+        {"name": "Rocket Sentry", "icon": "icons/Rocket_Sentry.svg", "seq": [DN, UP, RT, RT, LT]},
+        {"name": "EMS Mortar Sentry", "icon": "icons/EMS_Mortar_Sentry.svg", "seq": [DN, UP, RT, DN, RT]},
+        {"name": "Patriot Exosuit", "icon": "icons/Patriot_Exosuit.svg", "seq": [LT, DN, RT, UP, LT, DN, DN]},
+        {"name": "Emancipator Exosuit", "icon": "icons/Emancipator_Exosuit.svg", "seq": [LT, DN, RT, UP, LT, DN, UP]}
+    ],
+    "Mission": [
+        {"name": "Reinforce", "icon": "icons/Reinforce.svg", "seq": [UP, DN, RT, LT, UP]},
+        {"name": "SOS Beacon", "icon": "icons/SOS_Beacon.svg", "seq": [UP, DN, RT, UP]},
+        {"name": "Resupply", "icon": "icons/Resupply.svg", "seq": [DN, DN, UP, RT]},
+        {"name": "Eagle Rearm", "icon": "icons/Eagle_Rearm.svg", "seq": [UP, UP, LT, UP, RT]},
+        {"name": "Hellbomb", "icon": "icons/Hellbomb.svg", "seq": [DN, UP, LT, DN, UP, RT, DN, UP]},
+        {"name": "SEAF Artillery", "icon": "icons/SEAF_Artillery.svg", "seq": [RT, UP, UP, DN]},
+        {"name": "Super Earth Flag", "icon": "icons/Super_Earth_Flag.svg", "seq": [DN, UP, DN, UP]},
+        {"name": "SSSD Delivery", "icon": "icons/SSSD_Delivery.svg", "seq": [DN, DN, DN, UP, UP]},
+        {"name": "Seismic Probe", "icon": "icons/Seismic_Probe.svg", "seq": [UP, UP, LT, RT, DN, DN]},
+        {"name": "Upload Data", "icon": "icons/Upload_Data.svg", "seq": [LT, RT, UP, UP, UP]},
+        {"name": "Tectonic Drill", "icon": "icons/Tectonic_Drill.svg", "seq": [DN, DN, LT, RT, DN, DN]},
+        {"name": "Hive Breaker Drill", "icon": "icons/Hive_Breaker_Drill.svg", "seq": [DN, UP, LT, DN, UP, RT, DN, DN]},
+        {"name": "Dark Fluid Vessel", "icon": "icons/Dark_Fluid_Vessel.svg", "seq": [DN, UP, LT, DN, UP, RT]},
+        {"name": "Orbital Illumination Flare", "icon": "icons/Orbital_Illumination_Flare.svg", "seq": [RT, RT, LT, LT]}
+    ]
+}
 
 # --- 4. ASSET & MACRO LOGIC ---
 is_chatting = False
@@ -248,7 +266,14 @@ class HellTux(QWidget):
         container = QWidget()
         grid = QGridLayout(container)
         
-        avail = [st for st in STRATAGEM_DB if st['name'] not in [b['name'] for b in self.active_binds.values()]]
+        # Flatten the categorized dict into a single list of all stratagems
+        all_strats = []
+        for category_list in STRATAGEM_DB.values():
+            all_strats.extend(category_list)
+
+        # Now use 'all_strats' instead of 'STRATAGEMS'
+        active_names = [b['name'] for b in self.active_binds.values()]
+        avail = [st for st in all_strats if st['name'] not in active_names]
         
         for i, st in enumerate(avail):
             b = QPushButton(container)
