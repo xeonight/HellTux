@@ -344,7 +344,7 @@ class HellTux(QWidget):
         scroll.setWidget(container)
         scroll.setWidgetResizable(True)
         main_layout.addWidget(scroll)
-        self.p.resize(620, 550)
+        self.p.resize(603, 1015)
         self.p.show()
 
     def assign(self, key, strat):
