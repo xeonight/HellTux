@@ -177,12 +177,6 @@ class HellTux(QWidget):
         self.status.setStyleSheet("color: #0F0; font-weight: bold; border: none; font-size: 16px;") # +2pt (14->16)
         layout.addWidget(self.status)
 
-        # Numpad 0 / Reinforce Indicator
-        reinf_btn = QPushButton("[0] REINFORCE (STATIC)")
-        reinf_btn.setFixedSize(320, 40)
-        reinf_btn.setStyleSheet("background: #111; border: 1px solid #FFD700; color: white; font-weight: bold; font-size: 13px;")
-        layout.addWidget(reinf_btn, alignment=Qt.AlignmentFlag.AlignCenter)
-
         # --- NUMPAD GRID ---
         grid = QGridLayout()
         self.btns = {}
@@ -225,6 +219,25 @@ class HellTux(QWidget):
             grid.addWidget(btn, *pos)
             self.btns[k] = btn
         layout.addLayout(grid)
+
+        # --- 4. REINFORCE (Now at the Bottom) ---
+        reinf_btn = QPushButton("[0] REINFORCE (STATIC)")
+        reinf_btn.setFixedSize(320, 45)
+        reinf_btn.setStyleSheet("""
+            background: #111; 
+            border: 1px solid #FFD700; 
+            color: #FFF; 
+            font-weight: bold; 
+            font-size: 13px;
+            border-radius: 5px;
+        """)
+        # Optional: Add the icon to the static button too
+        reinf_path = resource_path("icons/reinforce.svg")
+        if os.path.exists(reinf_path):
+            reinf_btn.setIcon(QIcon(reinf_path))
+            reinf_btn.setIconSize(QSize(24, 24))
+            
+        layout.addWidget(reinf_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def update_status_ui(self, chatting):
         self.status.setText("CHAT PAUSE" if chatting else "DEMOCRACY READY")
