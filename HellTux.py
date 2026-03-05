@@ -34,8 +34,6 @@ except:
     ui_device = None
 
 # --- 3. MASTER STRATAGEM DATABASE ---
-# Constants for your sequence format
-# UP, DN, LT, RT = "UP", "DN", "LT", "RT"
 
 STRATAGEM_DB = {
     "Standard": [
@@ -199,22 +197,24 @@ class HellTux(QWidget):
             btn.setFixedSize(100, 100)
             btn.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
             
-            # 1. THE ICON (Bottom Layer)
+            # Enable Right-Click
+            btn.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            btn.customContextMenuRequested.connect(lambda pos, key=k: self.clear_single_bind(key))
+            
+            # --- Layering (Icon and Text) ---
             bg = QLabel(btn)
             bg.setFixedSize(100, 100)
             bg.setScaledContents(True)
             bg.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-            btn.bg = bg # Store reference
+            btn.bg = bg 
             
-            # 2. THE TEXT OVERLAY (Top Layer)
             txt = QLabel(btn)
             txt.setGeometry(0, 0, 100, 100)
             txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
             txt.setWordWrap(True)
-            # Increased font size +2pt (from roughly 9px to 11px)
             txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: transparent;")
             txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-            btn.txt = txt # Store reference
+            btn.txt = txt 
             
             if k in self.active_binds:
                 self.apply_visual(btn, k, self.active_binds[k])
@@ -254,6 +254,22 @@ class HellTux(QWidget):
                     elif sc in SCAN_TO_KEY:
                         key = SCAN_TO_KEY[sc]
                         if key in self.active_binds: run_macro(self.active_binds[key]["seq"])
+
+    def clear_single_bind(self, key):
+        if key in self.active_binds:
+            del self.active_binds[key]
+            # Save the updated config
+            with open(CONFIG_FILE, 'w') as f:
+                json.dump(self.active_binds, f)
+            
+            # Reset visuals for this button
+            btn = self.btns[key]
+            btn.bg.clear()
+            btn.txt.setText(f"{key}\nEMPTY")
+            btn.txt.setGraphicsEffect(None) # Remove the text outline
+            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: transparent;")
+            btn.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
+            print(f"🗑️ Cleared bind for Numpad {key}")
 
     def open_picker(self, key):
         self.p = QWidget()
