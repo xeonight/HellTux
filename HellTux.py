@@ -269,8 +269,8 @@ class HellTux(QWidget):
         self.refresh_devices()
 
         # LOAD SAVED DEVICE
-        saved_dev = self.settings.get('last_device')
-        if saved_dev:
+        saved_dev = self.settings.get('last_device', "")
+        if saved_dev and isinstance(saved_dev, str):
             index = self.dev_selector.findText(saved_dev)
             if index == -1: 
                 # If the exact "Name (eventX)" isn't found, try matching just the Name
@@ -352,11 +352,9 @@ class HellTux(QWidget):
         current_name = self.dev_selector.currentText()
         if not current_name or current_name not in self.dev_map:
             return
-            
-        device_path = self.dev_map[current_name]
         
         try:
-            dev = InputDevice(device_path)
+            dev = InputDevice(self.dev_map[current_name])
             print(f"📡 Listening to: {dev.name}")
             
             # Use non-blocking read or check the 'listening' flag
@@ -368,27 +366,29 @@ class HellTux(QWidget):
                     if kev.keystate == 1:
                         sc = kev.scancode
                     
-                    # Chat Toggling
-                    if sc == 28: # ENTER Key
-                            is_chatting = not is_chatting
-                            signals.chat_toggled.emit(is_chatting)
-                            print(f"💬 Chat Mode: {'ON' if is_chatting else 'OFF'}")
-                            continue # Don't process macros while toggling
-                            
-                    elif sc == 1: # Esc
-                        if is_chatting:
-                            is_chatting = False
-                            signals.chat_toggled.emit(False)
-                            print("Chat Mode: False (ESC)")
+                        # Chat Toggling
+                        if sc == 28: # ENTER Key
+                                is_chatting = not is_chatting
+                                signals.chat_toggled.emit(is_chatting)
+                                print(f"💬 Chat Mode: {'ON' if is_chatting else 'OFF'}")
+                                continue # Don't process macros while toggling
+                                
+                        elif sc == 1: # Esc
+                            if is_chatting:
+                                is_chatting = False
+                                signals.chat_toggled.emit(False)
+                                print("Chat Mode: False (ESC)")
+                            continue
+                        
+                        # Execute Macros
+                        if sc == REINFORCE_SCAN: 
+                            run_macro([UP, DN, RT, LT, UP])
+                        elif sc in SCAN_TO_KEY:
+                            key = SCAN_TO_KEY[sc]
+                            if key in self.active_binds:
+                                run_macro(self.active_binds[key]["seq"])
+                    else:
                         continue
-                    
-                    # Execute Macros
-                    if sc == REINFORCE_SCAN: 
-                        run_macro([UP, DN, RT, LT, UP])
-                    elif sc in SCAN_TO_KEY:
-                        key = SCAN_TO_KEY[sc]
-                        if key in self.active_binds:
-                            run_macro(self.active_binds[key]["seq"])
 
         except Exception as err:
             print(f"⚠️ Device Error: {err}")
