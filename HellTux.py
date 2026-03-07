@@ -1,7 +1,7 @@
 import sys, os, json, time, requests, webbrowser, threading, zipfile, io, shutil
 from pathlib import Path
 from evdev import UInput, ecodes as e, list_devices, InputDevice, categorize
-from PyQt6.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, 
+from PyQt6.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QComboBox,
                              QScrollArea, QVBoxLayout, QHBoxLayout, QLabel, QMessageBox, QGraphicsDropShadowEffect)
 from PyQt6.QtGui import QIcon, QPixmap, QColor
 from PyQt6.QtCore import Qt, QSize, pyqtSignal, QObject
@@ -146,7 +146,21 @@ class HellTux(QWidget):
     def __init__(self):
         super().__init__()
         download_and_extract()
-        self.active_binds = self.load_config()
+        self.settings = {}
+        if CONFIG_FILE.exists():
+            try:
+                with open(CONFIG_FILE, 'r') as f:
+                    self.settings = json.load(f)
+            except Exception as e:
+                print(f"Error loading config: {e}")
+                self.settings = {}
+
+        # 2. Extract binds (so they're available for buttons)
+        # Handle the case where the file might be the old format or new format
+        self.active_binds = self.settings.get("binds", self.settings) 
+        if "binds" not in self.settings:
+            # If it's an old file, wrap it in the new structure
+            self.settings = {"binds": self.active_binds, "last_device": ""}
         self.initUI()
         signals.chat_toggled.connect(self.update_status_ui)
         threading.Thread(target=self.evdev_listener, daemon=True).start()
@@ -239,41 +253,153 @@ class HellTux(QWidget):
             
         layout.addWidget(reinf_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        dev_label = QLabel("INPUT DEVICE:")
+        dev_label.setStyleSheet("color: #FFD700; font-weight: bold; border: none; font-size: 10px; margin-top: 5px;")
+        layout.addWidget(dev_label)
+
+        self.dev_selector = QComboBox()
+        self.dev_selector.setStyleSheet("""
+            QComboBox { 
+                background: #222; color: #FFF; border: 1px solid #FFD700; padding: 5px; 
+            }
+            QComboBox QAbstractItemView { background: #222; color: #FFF; selection-background-color: #444; }
+        """)
+        
+        # Populate with devices
+        self.refresh_devices()
+
+        # LOAD SAVED DEVICE
+        saved_dev = self.settings.get('last_device')
+        if saved_dev:
+            index = self.dev_selector.findText(saved_dev)
+            if index == -1: 
+                # If the exact "Name (eventX)" isn't found, try matching just the Name
+                base_name = saved_dev.split(" (event")[0]
+                for i in range(self.dev_selector.count()):
+                    if self.dev_selector.itemText(i).startswith(base_name):
+                        index = i
+                        break
+            if index >= 0:
+                self.dev_selector.setCurrentIndex(index)
+
+        self.dev_selector.currentIndexChanged.connect(self.restart_listener)
+        layout.addWidget(self.dev_selector)
+
     def update_status_ui(self, chatting):
         self.status.setText("CHAT PAUSE" if chatting else "DEMOCRACY READY")
         self.status.setStyleSheet("color: #F00; font-weight: bold; border:none;" if chatting else "color: #0F0; font-weight: bold; border:none;")
 
+    def save_settings(self):
+        data = {
+            "binds": self.active_binds,
+            "last_device": self.dev_selector.currentText()
+        }
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    def refresh_devices(self):
+        self.dev_map = {}
+        for p in list_devices():
+            try:
+                d = InputDevice(p)
+                caps = d.capabilities()
+                name = d.name.lower()
+                
+                # Check for standard keyboard keys (like A-Z or Numpad)
+                # Keyboards usually have KEY_A (30) or KEY_KP1 (79)
+                has_kb_keys = False
+                if e.EV_KEY in caps:
+                    key_codes = caps[e.EV_KEY]
+                    # Check if it has a broad range of keys or specific numpad keys
+                    if 30 in key_codes or 79 in key_codes or len(key_codes) > 40:
+                        has_kb_keys = True
+
+                # Check for mouse movement
+                has_mouse = e.EV_REL in caps or e.EV_ABS in caps
+                
+                # Block known "non-input" noise
+                ignored = ["mic", "audio", "mono", "speaker", "headset", "webcam", "video", "power", "button"]
+                if any(x in name for x in ignored):
+                    continue
+
+                if has_kb_keys or has_mouse:
+                    # Append the path to the name to differentiate identical K70s
+                    display_name = f"{d.name} ({p.split('/')[-1]})"
+                    self.dev_map[display_name] = p
+            except:
+                continue
+
+        self.dev_selector.clear()
+        self.dev_selector.addItems(sorted(self.dev_map.keys()))
+
+    def restart_listener(self):
+        # Setting a flag to break the current loop
+        self.listening = False
+        time.sleep(0.2)
+
+        # SAVE DEVICE TO SETTINGS
+        current_name = self.dev_selector.currentText()
+        if current_name:
+            self.settings['last_device'] = current_name
+            self.save_settings() # Helper to write to CONFIG_FILE
+
+        threading.Thread(target=self.evdev_listener, daemon=True).start()
+
     def evdev_listener(self):
         global is_chatting
-        dev = None
-        for p in list_devices():
-            d = InputDevice(p)
-            if e.KEY_A in d.capabilities().get(e.EV_KEY, []):
-                dev = d; break
-        if not dev: return
-        for event in dev.read_loop():
-            if event.type == e.EV_KEY:
-                kev = categorize(event)
-                if kev.keystate == 1:
-                    sc = kev.scancode
-                    if sc == 28: # Enter
-                        is_chatting = not is_chatting
-                        signals.chat_toggled.emit(is_chatting)
-                    elif sc == 1 and is_chatting: # Esc
-                        is_chatting = False
-                        signals.chat_toggled.emit(False)
-                    if is_chatting: continue
-                    if sc == REINFORCE_SCAN: run_macro([UP, DN, RT, LT, UP])
+        self.listening = True
+        
+        current_name = self.dev_selector.currentText()
+        if not current_name or current_name not in self.dev_map:
+            return
+            
+        device_path = self.dev_map[current_name]
+        
+        try:
+            dev = InputDevice(device_path)
+            print(f"📡 Listening to: {dev.name}")
+            
+            # Use non-blocking read or check the 'listening' flag
+            for event in dev.read_loop():
+                if not self.listening: break 
+                
+                if event.type == e.EV_KEY:
+                    kev = categorize(event)
+                    if kev.keystate == 1:
+                        sc = kev.scancode
+                    
+                    # Chat Toggling
+                    if sc == 28: # ENTER Key
+                            is_chatting = not is_chatting
+                            signals.chat_toggled.emit(is_chatting)
+                            print(f"💬 Chat Mode: {'ON' if is_chatting else 'OFF'}")
+                            continue # Don't process macros while toggling
+                            
+                    elif sc == 1: # Esc
+                        if is_chatting:
+                            is_chatting = False
+                            signals.chat_toggled.emit(False)
+                            print("Chat Mode: False (ESC)")
+                        continue
+                    
+                    # Execute Macros
+                    if sc == REINFORCE_SCAN: 
+                        run_macro([UP, DN, RT, LT, UP])
                     elif sc in SCAN_TO_KEY:
                         key = SCAN_TO_KEY[sc]
-                        if key in self.active_binds: run_macro(self.active_binds[key]["seq"])
+                        if key in self.active_binds:
+                            run_macro(self.active_binds[key]["seq"])
+
+        except Exception as err:
+            print(f"⚠️ Device Error: {err}")
 
     def clear_single_bind(self, key):
         if key in self.active_binds:
             del self.active_binds[key]
             # Save the updated config
             with open(CONFIG_FILE, 'w') as f:
-                json.dump(self.active_binds, f)
+                # json.dump(self.active_binds, f)
+                self.save_settings()
             
             # Reset visuals for this button
             btn = self.btns[key]
@@ -350,7 +476,9 @@ class HellTux(QWidget):
     def assign(self, key, strat):
         self.active_binds[key] = strat
         self.apply_visual(self.btns[key], key, strat)
-        with open(CONFIG_FILE, 'w') as f: json.dump(self.active_binds, f)
+        with open(CONFIG_FILE, 'w') as f: 
+            # json.dump(self.active_binds, f)
+            self.save_settings()
 
     def apply_visual(self, btn, key, strat):
         path = resource_path(strat['icon'])
