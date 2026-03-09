@@ -1,7 +1,7 @@
 import sys, os, json, time, requests, webbrowser, threading, zipfile, io, shutil
 from pathlib import Path
 from evdev import UInput, ecodes as e, list_devices, InputDevice, categorize
-from PyQt6.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QComboBox,
+from PyQt6.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QComboBox, QCheckBox, QSlider, QSizePolicy,
                              QScrollArea, QVBoxLayout, QHBoxLayout, QLabel, QMessageBox, QGraphicsDropShadowEffect)
 from PyQt6.QtGui import QIcon, QPixmap, QColor
 from PyQt6.QtCore import Qt, QSize, pyqtSignal, QObject
@@ -129,7 +129,7 @@ def download_and_extract():
                 clean_name = svg_path.name.replace(" ", "_").lower()
                 shutil.copy2(svg_path, ICON_DIR / clean_name)
             shutil.rmtree(temp_extract_dir)
-            print(f"✅ Assets Synced (Case-Insensitive): {len(found_svgs)} icons.")
+            print(f"Assets Synced (Case-Insensitive): {len(found_svgs)} icons.")
     except Exception as e: print(f"Asset Error: {e}")
 
 def run_macro(sequence):
@@ -171,8 +171,31 @@ class HellTux(QWidget):
         self.setStyleSheet("background: #000; color: #FFD700; border: 1px solid #FFD700;")
         layout = QVBoxLayout(self)
         
-        # --- TOP CONTROL BAR ---
-        ctrl_layout = QHBoxLayout()
+        # --- TOP CONTROL BAR (Vertical Stack) ---
+        top_container = QVBoxLayout()
+        
+        # 1. Checkbox on its own row
+        self.show_text_cb = QCheckBox("SHOW TEXT")
+        # Load saved preference (Default to True if not found)
+        self.show_text_cb.setChecked(self.settings.get("show_names", True))
+        self.show_text_cb.setStyleSheet("color: #FFD700; font-weight: bold; border: none; margin-bottom: 5px;")
+        self.show_text_cb.stateChanged.connect(self.toggle_text_visibility)
+        top_container.addWidget(self.show_text_cb)
+
+        # --- SCALE SLIDER ---
+        scale_label = QLabel(f"UI SCALE: {self.settings.get('ui_scale', 100)}%")
+        scale_label.setStyleSheet("color: #FFD700; font-size: 10px; border: none;")
+        
+        self.scale_slider = QSlider(Qt.Orientation.Horizontal)
+        self.scale_slider.setRange(60, 200) # 60% to 150% size
+        self.scale_slider.setValue(self.settings.get('ui_scale', 100))
+        self.scale_slider.valueChanged.connect(lambda v: [scale_label.setText(f"UI SCALE: {v}%"), self.apply_global_scale(v)])
+        
+        top_container.addWidget(scale_label)
+        top_container.addWidget(self.scale_slider)
+
+        # 2. Buttons on the row below
+        btn_row = QHBoxLayout()
         wiki_btn = QPushButton("WIKI")
         wiki_btn.setStyleSheet("background: #222; color: #0FF; border: 1px solid #0FF; font-weight: bold; padding: 5px;")
         wiki_btn.clicked.connect(lambda: webbrowser.open("https://helldivers.wiki.gg/wiki/Stratagems"))
@@ -181,9 +204,11 @@ class HellTux(QWidget):
         clear_btn.setStyleSheet("background: #222; color: #F00; border: 1px solid #F00; font-weight: bold; padding: 5px;")
         clear_btn.clicked.connect(self.clear_all)
         
-        ctrl_layout.addWidget(wiki_btn)
-        ctrl_layout.addWidget(clear_btn)
-        layout.addLayout(ctrl_layout)
+        btn_row.addWidget(wiki_btn)
+        btn_row.addWidget(clear_btn)
+        top_container.addLayout(btn_row)
+        
+        layout.addLayout(top_container)
 
         # --- STATUS & REINFORCE ---
         self.status = QLabel("DEMOCRACY READY")
@@ -258,6 +283,9 @@ class HellTux(QWidget):
         layout.addWidget(dev_label)
 
         self.dev_selector = QComboBox()
+        # Force the dropdown to ignore its contents' width when calculating window size
+        self.dev_selector.setMaximumWidth(250) 
+        self.dev_selector.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.dev_selector.setStyleSheet("""
             QComboBox { 
                 background: #222; color: #FFF; border: 1px solid #FFD700; padding: 5px; 
@@ -265,6 +293,10 @@ class HellTux(QWidget):
             QComboBox QAbstractItemView { background: #222; color: #FFF; selection-background-color: #444; }
         """)
         
+        # Update the main window constraints to allow shrinking
+        self.setMinimumSize(0, 0)
+        self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
         # Populate with devices
         self.refresh_devices()
 
@@ -292,10 +324,43 @@ class HellTux(QWidget):
     def save_settings(self):
         data = {
             "binds": self.active_binds,
-            "last_device": self.dev_selector.currentText()
+            "last_device": self.dev_selector.currentText(),
+            "show_names": self.show_text_cb.isChecked(),
+            "ui_scale": self.scale_slider.value()
         }
         with open(CONFIG_FILE, 'w') as f:
             json.dump(data, f, indent=4)
+        self.settings = data
+
+    def apply_global_scale(self, scale_val):
+        base_size = 100
+        new_size = int(base_size * (scale_val / 100))
+        
+        for btn in self.btns.values():
+            btn.setFixedSize(new_size, new_size)
+            btn.bg.setFixedSize(new_size, new_size)
+            btn.txt.setGeometry(0, 0, new_size, new_size)
+            btn.txt.setStyleSheet(f"color: white; font-weight: bold; font-size: {int(11 * (scale_val/100))}px; background: transparent;")
+        
+        self.adjustSize()
+        self.save_settings()
+
+    def toggle_text_visibility(self):
+        # Determine visibility based on checkbox state
+        is_visible = self.show_text_cb.isChecked()
+        
+        # Loop through all 1-9 buttons and toggle their text layer
+        for btn in self.btns.values():
+            btn.txt.setVisible(is_visible)
+
+        # Target ONLY the labels in the picker that are meant for text
+        if hasattr(self, 'p') and self.p.isVisible():
+            for label in self.p.findChildren(QLabel):
+                # Only hide if it's NOT marked as an icon
+                if label.property("is_icon") != True:
+                    label.setVisible(is_visible)
+        # Automatically save this preference
+        self.save_settings()
 
     def refresh_devices(self):
         self.dev_map = {}
@@ -355,7 +420,7 @@ class HellTux(QWidget):
         
         try:
             dev = InputDevice(self.dev_map[current_name])
-            print(f"📡 Listening to: {dev.name}")
+            print(f"Listening to: {dev.name}")
             
             # Use non-blocking read or check the 'listening' flag
             for event in dev.read_loop():
@@ -391,7 +456,7 @@ class HellTux(QWidget):
                         continue
 
         except Exception as err:
-            print(f"⚠️ Device Error: {err}")
+            print(f"Device Error: {err}")
 
     def clear_single_bind(self, key):
         if key in self.active_binds:
@@ -416,11 +481,27 @@ class HellTux(QWidget):
         self.p.setStyleSheet("background: #0d0d0d; border: 2px solid #FFD700; border-radius: 10px;")
         
         main_layout = QVBoxLayout(self.p)
+
+        # --- PICKER TOP BAR ---
+        picker_ctrl = QHBoxLayout()
+        p_text_cb = QCheckBox("SHOW NAMES")
+        p_text_cb.setChecked(self.show_text_cb.isChecked())
+        p_text_cb.setStyleSheet("color: #FFD700; font-weight: bold; border: none;")
+        # Link picker checkbox to main checkbox so they stay in sync
+        p_text_cb.stateChanged.connect(lambda: [self.show_text_cb.setChecked(p_text_cb.isChecked()), self.toggle_text_visibility()])
+        
+        picker_ctrl.addWidget(p_text_cb)
+        main_layout.addLayout(picker_ctrl)
+
         scroll = QScrollArea()
         scroll.setStyleSheet("border: none; background: transparent;")
         container = QWidget()
         grid = QGridLayout(container)
-        
+
+        # Apply the current scale to picker buttons
+        scale_pct = self.scale_slider.value() / 100
+        p_size = int(90 * scale_pct)
+
         # Flatten the categorized dict into a single list of all stratagems
         all_strats = []
         for category_list in STRATAGEM_DB.values():
@@ -432,35 +513,38 @@ class HellTux(QWidget):
         
         for i, st in enumerate(avail):
             b = QPushButton(container)
-            b.setFixedSize(90, 90)
+            b.setFixedSize(p_size, p_size)
             b.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
             
             # 1. THE ICON (Fills the whole 90x90 square)
             img = QLabel(b)
-            img.setFixedSize(90, 90)
+            img.setFixedSize(p_size, p_size)
+            img.setProperty("is_icon", True) # TAG THIS AS AN ICON
             img.setScaledContents(True)
             path = resource_path(st['icon'])
             if os.path.exists(path):
                 img.setPixmap(QPixmap(path))
             else:
-                img.setText("📦")
+                img.setText("ICON NOT FOUND")
                 img.setAlignment(Qt.AlignmentFlag.AlignCenter)
             img.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
             # 2. THE TEXT OVERLAY (Now fills the whole 90x90 square)
             txt = QLabel(b)
-            txt.setGeometry(0, 0, 90, 90) # Change: 0, 45, 90, 45 -> 0, 0, 90, 90
+            txt.setGeometry(0, 0, p_size, p_size)
+            txt.setProperty("is_icon", False)
             txt.setWordWrap(True)
             txt.setText(st['name'])
             txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            txt.setVisible(self.show_text_cb.isChecked())
             # Increased font size +2pt and made the background cover the whole button
             txt.setStyleSheet("""
                 color: white; 
                 font-weight: bold; 
-                font-size: 11px; 
+                font-size: {int(11 * scale_pct)}; 
                 background: rgba(0,0,0,120); 
                 border-radius: 5px;
-                padding: 5px;
+                padding: 2px;
             """)
             txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
             
@@ -470,7 +554,7 @@ class HellTux(QWidget):
         scroll.setWidget(container)
         scroll.setWidgetResizable(True)
         main_layout.addWidget(scroll)
-        self.p.resize(603, 1015)
+        self.p.resize(int(603* scale_pct), 1015)
         self.p.show()
 
     def assign(self, key, strat):
@@ -493,6 +577,7 @@ class HellTux(QWidget):
             btn.txt.setGraphicsEffect(outline)            
             btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: rgba(0,0,0,80);")        
         btn.txt.setText(f"{key}\n{strat['name']}")
+        btn.txt.setVisible(self.show_text_cb.isChecked()) # Respect the Checkbox state
         btn.setStyleSheet("border: 1px solid #FFD700; border-radius: 5px;")
 
     def clear_all(self):
