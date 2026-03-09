@@ -187,7 +187,7 @@ class HellTux(QWidget):
         scale_label.setStyleSheet("color: #FFD700; font-size: 10px; border: none;")
         
         self.scale_slider = QSlider(Qt.Orientation.Horizontal)
-        self.scale_slider.setRange(60, 200) # 60% to 150% size
+        self.scale_slider.setRange(100, 200) # 60% to 200% size
         self.scale_slider.setValue(self.settings.get('ui_scale', 100))
         self.scale_slider.valueChanged.connect(lambda v: [scale_label.setText(f"UI SCALE: {v}%"), self.apply_global_scale(v)])
         
@@ -196,7 +196,7 @@ class HellTux(QWidget):
 
         # 2. Buttons on the row below
         btn_row = QHBoxLayout()
-        wiki_btn = QPushButton("WIKI")
+        wiki_btn = QPushButton("STRATAGEM WIKI")
         wiki_btn.setStyleSheet("background: #222; color: #0FF; border: 1px solid #0FF; font-weight: bold; padding: 5px;")
         wiki_btn.clicked.connect(lambda: webbrowser.open("https://helldivers.wiki.gg/wiki/Stratagems"))
         
@@ -213,7 +213,7 @@ class HellTux(QWidget):
         # --- STATUS & REINFORCE ---
         self.status = QLabel("DEMOCRACY READY")
         self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.status.setStyleSheet("color: #0F0; font-weight: bold; border: none; font-size: 16px;") # +2pt (14->16)
+        self.status.setStyleSheet("color: #0F0; font-weight: bold; border: none; font-size: 16px;")
         layout.addWidget(self.status)
 
         # --- NUMPAD GRID ---
@@ -245,7 +245,7 @@ class HellTux(QWidget):
             txt.setGeometry(0, 0, 100, 100)
             txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
             txt.setWordWrap(True)
-            txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: transparent;")
+            txt.setStyleSheet("color: white; font-weight: bold; font-size: 12px; background: transparent;")
             txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
             btn.txt = txt 
             
@@ -284,13 +284,24 @@ class HellTux(QWidget):
 
         self.dev_selector = QComboBox()
         # Force the dropdown to ignore its contents' width when calculating window size
-        self.dev_selector.setMaximumWidth(250) 
+        # self.dev_selector.setFixedWidth(250) 
         self.dev_selector.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        # self.dev_selector.setTextElideMode(Qt.TextElideMode.ElideMiddle) # was trying to get the chosen device to Elide it's text
+        self.dev_selector.view().setTextElideMode(Qt.TextElideMode.ElideNone)
+        # Force the popup list to resize to the width of its longest item
+        self.dev_selector.view().setMinimumWidth(400) # Set this to a comfortable 'full' width
         self.dev_selector.setStyleSheet("""
             QComboBox { 
-                background: #222; color: #FFF; border: 1px solid #FFD700; padding: 5px; 
+                background: #111; color: #FFD700; border: 1px solid #FFD700; 
+                padding: 3px; font-size: 12px;
             }
-            QComboBox QAbstractItemView { background: #222; color: #FFF; selection-background-color: #444; }
+            /* Style the popup list specifically */
+            QComboBox QAbstractItemView { 
+                background: #111; color: #FFD700; 
+                selection-background-color: #333;
+                outline: none;
+                border: 1px solid #FFD700;
+            }
         """)
         
         # Update the main window constraints to allow shrinking
@@ -340,7 +351,14 @@ class HellTux(QWidget):
             btn.setFixedSize(new_size, new_size)
             btn.bg.setFixedSize(new_size, new_size)
             btn.txt.setGeometry(0, 0, new_size, new_size)
-            btn.txt.setStyleSheet(f"color: white; font-weight: bold; font-size: {int(11 * (scale_val/100))}px; background: transparent;")
+            
+            # Refresh the background and font size
+            btn.txt.setStyleSheet(f"""
+                color: white; 
+                font-weight: bold; 
+                font-size: 12px; 
+                background: rgba(0, 0, 0, 120);
+            """)
         
         self.adjustSize()
         self.save_settings()
@@ -471,9 +489,9 @@ class HellTux(QWidget):
             btn.bg.clear()
             btn.txt.setText(f"{key}\nEMPTY")
             btn.txt.setGraphicsEffect(None) # Remove the text outline
-            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: transparent;")
+            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 12px; background: transparent;")
             btn.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
-            print(f"🗑️ Cleared bind for Numpad {key}")
+            print(f"Cleared bind for Numpad {key}")
 
     def open_picker(self, key):
         self.p = QWidget()
@@ -541,7 +559,7 @@ class HellTux(QWidget):
             txt.setStyleSheet("""
                 color: white; 
                 font-weight: bold; 
-                font-size: {int(11 * scale_pct)}; 
+                font-size: 12px; 
                 background: rgba(0,0,0,120); 
                 border-radius: 5px;
                 padding: 2px;
@@ -566,8 +584,20 @@ class HellTux(QWidget):
 
     def apply_visual(self, btn, key, strat):
         path = resource_path(strat['icon'])
+        scale_val = self.scale_slider.value() / 100
         if os.path.exists(path):
-            btn.bg.setPixmap(QPixmap(path))            
+            btn.bg.setPixmap(QPixmap(path))
+            btn.bg.show()
+            
+            # --- THE TEXT + BACKGROUND LAYER ---
+            # Using rgba(0,0,0,150) for a slightly darker, more readable tint
+            btn.txt.setStyleSheet(f"""
+                color: white; 
+                font-weight: bold; 
+                font-size: 12px; 
+                background: rgba(0, 0, 0, 150);
+                padding: 2px;
+            """)            
             # Create a "Stroke/Outline" effect
             outline = QGraphicsDropShadowEffect()
             outline.setBlurRadius(2)
@@ -575,7 +605,7 @@ class HellTux(QWidget):
             outline.setYOffset(0)
             outline.setColor(QColor(0, 0, 0, 255)) # Pure black outline
             btn.txt.setGraphicsEffect(outline)            
-            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: rgba(0,0,0,80);")        
+            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 12px; background: rgba(0,0,0,80);")        
         btn.txt.setText(f"{key}\n{strat['name']}")
         btn.txt.setVisible(self.show_text_cb.isChecked()) # Respect the Checkbox state
         btn.setStyleSheet("border: 1px solid #FFD700; border-radius: 5px;")
@@ -586,7 +616,7 @@ class HellTux(QWidget):
         for k, btn in self.btns.items():
             btn.bg.clear()
             btn.txt.setText(f"{k}\nEMPTY")
-            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 11px; background: transparent;")
+            btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 12px; background: transparent;")
             btn.setStyleSheet("background: #111; border: 1px solid #333;")
 
     def load_config(self):
