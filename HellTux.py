@@ -36,7 +36,8 @@ except:
 # --- 3. MASTER STRATAGEM DATABASE ---
 
 STRATAGEM_DB = {
-    "Standard": [
+    "Main": [
+        # Patriotic Administration Center
         {"name": "Machine Gun", "icon": "icons/Machine_Gun.svg", "seq": [DN, LT, DN, UP, RT]},
         {"name": "Anti-Materiel Rifle", "icon": "icons/Anti-Materiel_Rifle.svg", "seq": [DN, LT, RT, UP, DN]},
         {"name": "Stalwart", "icon": "icons/Stalwart.svg", "seq": [DN, LT, DN, UP, UP, LT]},
@@ -45,8 +46,11 @@ STRATAGEM_DB = {
         {"name": "Flamethrower", "icon": "icons/Flamethrower.svg", "seq": [DN, LT, UP, DN, UP]},
         {"name": "Autocannon", "icon": "icons/Autocannon.svg", "seq": [DN, LT, DN, UP, UP, RT]},
         {"name": "Heavy Machine Gun", "icon": "icons/Heavy_Machine_Gun.svg", "seq": [DN, LT, UP, DN, DN]},
+        {"name": "Airburst Rocket Launcher", "icon": "icons/Airburst_Rocket_Launcher.svg", "seq": [DN, UP, UP, LT, RT]},
+        {"name": "Commando", "icon": "icons/Commando.svg", "seq": [DN, LT, UP, DN, RT]},
         {"name": "Railgun", "icon": "icons/Railgun.svg", "seq": [DN, RT, DN, UP, LT, RT]},
         {"name": "Spear", "icon": "icons/Spear.svg", "seq": [DN, DN, UP, DN, DN]},
+        # Orbital Cannons
         {"name": "Orbital Precision Strike", "icon": "icons/Orbital_Precision_Strike.svg", "seq": [RT, RT, UP]},
         {"name": "Orbital Gatling Barrage", "icon": "icons/Orbital_Gatling_Barrage.svg", "seq": [RT, DN, LT, UP, UP]},
         {"name": "Orbital Airburst Strike", "icon": "icons/Orbital_Airburst_Strike.svg", "seq": [RT, RT, RT]},
@@ -55,10 +59,7 @@ STRATAGEM_DB = {
         {"name": "Orbital Walking Barrage", "icon": "icons/Orbital_Walking_Barrage.svg", "seq": [RT, DN, RT, DN, RT, DN]},
         {"name": "Orbital Laser", "icon": "icons/Orbital_Laser.svg", "seq": [RT, DN, UP, RT, DN]},
         {"name": "Orbital Railcannon Strike", "icon": "icons/Orbital_Railcannon_Strike.svg", "seq": [RT, UP, DN, DN, RT]},
-        {"name": "Orbital Gas Strike", "icon": "icons/Orbital_Gas_Strike.svg", "seq": [RT, RT, DN, RT]},
-        {"name": "Orbital EMS Strike", "icon": "icons/Orbital_EMS_Strike.svg", "seq": [RT, RT, LT, DN]},
-        {"name": "Orbital Smoke Strike", "icon": "icons/Orbital_Smoke_Strike.svg", "seq": [RT, RT, DN, UP]},
-        {"name": "Orbital Napalm Barrage", "icon": "icons/Orbital_Napalm_Barrage.svg", "seq": [RT, RT, DN, UP, DN]},
+        # Hangar (Eagle)
         {"name": "Eagle Strafing Run", "icon": "icons/Eagle_Strafing_Run.svg", "seq": [UP, RT, RT]},
         {"name": "Eagle Airstrike", "icon": "icons/Eagle_Airstrike.svg", "seq": [UP, RT, DN, RT]},
         {"name": "Eagle Cluster Bomb", "icon": "icons/Eagle_Cluster_Bomb.svg", "seq": [UP, RT, DN, DN, RT]},
@@ -66,27 +67,48 @@ STRATAGEM_DB = {
         {"name": "Eagle Smoke Strike", "icon": "icons/Eagle_Smoke_Strike.svg", "seq": [UP, RT, UP, DN]},
         {"name": "Eagle 110MM Rocket Pods", "icon": "icons/Eagle_110MM_Rocket_Pods.svg", "seq": [UP, RT, UP, LT]},
         {"name": "Eagle 500KG Bomb", "icon": "icons/Eagle_500KG_Bomb.svg", "seq": [UP, RT, DN, DN, DN]},
-        {"name": "Supply Pack", "icon": "icons/Supply_Pack.svg", "seq": [DN, LT, DN, UP, UP, DN]},
-        {"name": "Jump Pack", "icon": "icons/Jump_Pack.svg", "seq": [DN, UP, UP, DN, UP]},
-        {"name": "Guard Dog Rover", "icon": "icons/Guard_Dog_Rover.svg", "seq": [DN, UP, LT, UP, RT, RT]},
-        {"name": "Guard Dog", "icon": "icons/Guard_Dog.svg", "seq": [DN, UP, LT, UP, RT, DN]},
-        {"name": "Ballistic Shield", "icon": "icons/Ballistic_Shield_Backpack.svg", "seq": [DN, LT, DN, DN, UP, LT]},
-        {"name": "Shield Generator Pack", "icon": "icons/Shield_Generator_Pack.svg", "seq": [DN, UP, LT, RT, LT, RT]},
-        {"name": "Arc Thrower", "icon": "icons/Arc_Thrower.svg", "seq": [DN, RT, DN, UP, LT, LT]},
-        {"name": "Quasar Cannon", "icon": "icons/Quasar_Cannon.svg", "seq": [DN, DN, UP, LT, RT]},
-        {"name": "Sterilizer", "icon": "icons/Sterilizer.svg", "seq": [DN, LT, DN, DN, UP, LT]},
+        # Bridge & Engineering
+        {"name": "Orbital Gas Strike", "icon": "icons/Orbital_Gas_Strike.svg", "seq": [RT, RT, DN, RT]},
+        {"name": "Orbital EMS Strike", "icon": "icons/Orbital_EMS_Strike.svg", "seq": [RT, RT, LT, DN]},
+        {"name": "Orbital Smoke Strike", "icon": "icons/Orbital_Smoke_Strike.svg", "seq": [RT, RT, DN, UP]},
+        {"name": "HMG Emplacement", "icon": "icons/HMG_Emplacement.svg", "seq": [DN, UP, LT, RT, RT, LT]},
+        {"name": "Shield Generator Relay", "icon": "icons/Shield_Generator_Relay.svg", "seq": [DN, DN, LT, RT, LT, RT]},
         {"name": "Tesla Tower", "icon": "icons/Tesla_Tower.svg", "seq": [DN, UP, RT, UP, LT, RT]},
         {"name": "Anti-Personnel Minefield", "icon": "icons/Anti-Personnel_Minefield.svg", "seq": [DN, LT, UP, RT]},
+        {"name": "Supply Pack", "icon": "icons/Supply_Pack.svg", "seq": [DN, LT, DN, UP, UP, DN]},
+        {"name": "Grenade Launcher", "icon": "icons/Grenade_Launcher.svg", "seq": [DN, LT, UP, LT, DN]},
+        {"name": "Laser Cannon", "icon": "icons/Laser_Cannon.svg", "seq": [DN, LT, DN, UP, LT]},
         {"name": "Incendiary Mines", "icon": "icons/Incendiary_Mines.svg", "seq": [DN, LT, LT, DN]},
-        {"name": "Anti-Tank Mines", "icon": "icons/Anti-Tank_Mines.svg", "seq": [DN, LT, UP, UP]},
+        {"name": "Guard Dog Rover", "icon": "icons/Guard_Dog_Rover.svg", "seq": [DN, UP, LT, UP, RT, RT]},
+        {"name": "Ballistic Shield", "icon": "icons/Ballistic_Shield_Backpack.svg", "seq": [DN, LT, DN, DN, UP, LT]},
+        {"name": "Arc Thrower", "icon": "icons/Arc_Thrower.svg", "seq": [DN, RT, DN, UP, LT, LT]},
+        {"name": "Shield Generator Pack", "icon": "icons/Shield_Generator_Pack.svg", "seq": [DN, UP, LT, RT, LT, RT]},
+        {"name": "Quasar Cannon", "icon": "icons/Quasar_Cannon.svg", "seq": [DN, DN, UP, LT, RT]},
+        # Robotics
         {"name": "Machine Gun Sentry", "icon": "icons/Machine_Gun_Sentry.svg", "seq": [DN, UP, RT, RT, UP]},
         {"name": "Gatling Sentry", "icon": "icons/Gatling_Sentry.svg", "seq": [DN, UP, RT, LT]},
         {"name": "Mortar Sentry", "icon": "icons/Mortar_Sentry.svg", "seq": [DN, UP, RT, RT, DN]},
+        {"name": "Guard Dog", "icon": "icons/Guard_Dog.svg", "seq": [DN, UP, LT, UP, RT, DN]},
         {"name": "Autocannon Sentry", "icon": "icons/Autocannon_Sentry.svg", "seq": [DN, UP, RT, UP, LT, UP]},
         {"name": "Rocket Sentry", "icon": "icons/Rocket_Sentry.svg", "seq": [DN, UP, RT, RT, LT]},
         {"name": "EMS Mortar Sentry", "icon": "icons/EMS_Mortar_Sentry.svg", "seq": [DN, UP, RT, DN, RT]},
         {"name": "Patriot Exosuit", "icon": "icons/Patriot_Exosuit.svg", "seq": [LT, DN, RT, UP, LT, DN, DN]},
         {"name": "Emancipator Exosuit", "icon": "icons/Emancipator_Exosuit.svg", "seq": [LT, DN, RT, UP, LT, DN, UP]}
+    ],
+    "Warbond": [
+        {"name": "Orbital Napalm Barrage", "icon": "icons/Orbital_Napalm_Barrage.svg", "seq": [RT, RT, DN, UP, DN]},
+        {"name": "Sterilizer", "icon": "icons/Sterilizer.svg", "seq": [DN, LT, DN, DN, UP, LT]},
+        {"name": "Anti-Tank Mines", "icon": "icons/Anti-Tank_Mines.svg", "seq": [DN, LT, UP, UP]},
+        {"name": "Gas Mines", "icon": "icons/Gas_Mine.svg", "seq": [DN, LT, LT, RT]},
+        {"name": "StA-X3 WASP", "icon": "icons/sta-x3_w.a.s.p._launcher.svg", "seq": [DN, DN, UP, DN, RT]},
+        {"name": "Portable Hellbomb", "icon": "icons/hellbomb_portable.svg", "seq": [DN, UP, LT, DN, UP, RT]},
+        {"name": "Hover Pack", "icon": "icons/Hover_Pack.svg", "seq": [DN, UP, UP, DN, UP]},
+        {"name": "Directional Shield", "icon": "icons/Directional_Shield.svg", "seq": [DN, LT, RT, UP, UP]},
+        {"name": "Flame Sentry", "icon": "icons/Flame_Sentry.svg", "seq": [DN, UP, RT, DN, DN]},
+        {"name": "Laser Sentry", "icon": "icons/Laser_Sentry.svg", "seq": [DN, UP, LT, UP, RT, UP]},
+        {"name": "Warp Pack", "icon": "icons/Warp_Pack.svg", "seq": [RT, LT, UP, UP, DN]},
+        {"name": "Speargun", "icon": "icons/Speargun.svg", "seq": [DN, DN, LT, RT, DN]},
+        {"name": "Maxigun", "icon": "icons/Maxigun.svg", "seq": [DN, LT, UP, RT, RT]}
     ],
     "Mission": [
         {"name": "Reinforce", "icon": "icons/Reinforce.svg", "seq": [UP, DN, RT, LT, UP]},
@@ -102,7 +124,9 @@ STRATAGEM_DB = {
         {"name": "Tectonic Drill", "icon": "icons/Tectonic_Drill.svg", "seq": [DN, DN, LT, RT, DN, DN]},
         {"name": "Hive Breaker Drill", "icon": "icons/Hive_Breaker_Drill.svg", "seq": [DN, UP, LT, DN, UP, RT, DN, DN]},
         {"name": "Dark Fluid Vessel", "icon": "icons/Dark_Fluid_Vessel.svg", "seq": [DN, UP, LT, DN, UP, RT]},
-        {"name": "Orbital Illumination Flare", "icon": "icons/Orbital_Illumination_Flare.svg", "seq": [RT, RT, LT, LT]}
+        {"name": "Illumination Flare", "icon": "icons/Orbital_Illumination_Flare.svg", "seq": [RT, RT, LT, LT]},
+        {"name": "One True Flag", "icon": "icons/One_True_Flag.svg", "seq": [DN, UP, DN, UP]},
+        {"name": "Confiscate Assets", "icon": "icons/cargo_container.svg", "seq": [RT, LT, UP, DN, RT]}
     ]
 }
 
@@ -501,79 +525,115 @@ class HellTux(QWidget):
         main_layout = QVBoxLayout(self.p)
 
         # --- PICKER TOP BAR ---
-        picker_ctrl = QHBoxLayout()
         p_text_cb = QCheckBox("SHOW NAMES")
         p_text_cb.setChecked(self.show_text_cb.isChecked())
         p_text_cb.setStyleSheet("color: #FFD700; font-weight: bold; border: none;")
-        # Link picker checkbox to main checkbox so they stay in sync
-        p_text_cb.stateChanged.connect(lambda: [self.show_text_cb.setChecked(p_text_cb.isChecked()), self.toggle_text_visibility()])
-        
-        picker_ctrl.addWidget(p_text_cb)
-        main_layout.addLayout(picker_ctrl)
+        p_text_cb.stateChanged.connect(lambda: [self.show_text_cb.setChecked(p_text_cb.isChecked()), self.toggle_text_visibility()]) # Link picker checkbox to main checkbox so they stay in sync
+        main_layout.addWidget(p_text_cb)
 
         scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
         scroll.setStyleSheet("border: none; background: transparent;")
         container = QWidget()
-        grid = QGridLayout(container)
+        container_layout = QVBoxLayout(container)
+        container_layout.setSpacing(2) # Tighten space between categories
 
         # Apply the current scale to picker buttons
         scale_pct = self.scale_slider.value() / 100
         p_size = int(90 * scale_pct)
 
-        # Flatten the categorized dict into a single list of all stratagems
-        all_strats = []
-        for category_list in STRATAGEM_DB.values():
-            all_strats.extend(category_list)
+        self.picker_sections = {}
 
-        # Now use 'all_strats' instead of 'STRATAGEMS'
-        active_names = [b['name'] for b in self.active_binds.values()]
-        avail = [st for st in all_strats if st['name'] not in active_names]
-        
-        for i, st in enumerate(avail):
-            b = QPushButton(container)
-            b.setFixedSize(p_size, p_size)
-            b.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
-            
-            # 1. THE ICON (Fills the whole 90x90 square)
-            img = QLabel(b)
-            img.setFixedSize(p_size, p_size)
-            img.setProperty("is_icon", True) # TAG THIS AS AN ICON
-            img.setScaledContents(True)
-            path = resource_path(st['icon'])
-            if os.path.exists(path):
-                img.setPixmap(QPixmap(path))
-            else:
-                img.setText("ICON NOT FOUND")
-                img.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            img.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-
-            # 2. THE TEXT OVERLAY (Now fills the whole 90x90 square)
-            txt = QLabel(b)
-            txt.setGeometry(0, 0, p_size, p_size)
-            txt.setProperty("is_icon", False)
-            txt.setWordWrap(True)
-            txt.setText(st['name'])
-            txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            txt.setVisible(self.show_text_cb.isChecked())
-            # Increased font size +2pt and made the background cover the whole button
-            txt.setStyleSheet("""
-                color: white; 
-                font-weight: bold; 
-                font-size: 12px; 
-                background: rgba(0,0,0,120); 
-                border-radius: 5px;
-                padding: 2px;
+        for cat_name, items in STRATAGEM_DB.items():
+            # Section Header
+            header = QPushButton(f"▼ {cat_name.upper()}")
+            header.setStyleSheet("""
+                QPushButton { 
+                    text-align: left; color: #FFD700; font-weight: bold; 
+                    background: #222; border: 1px solid #444; padding: 5px; margin-top: 5px;
+                }
             """)
-            txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
             
-            b.clicked.connect(lambda ch, s=st: [self.assign(key, s), self.p.close()])
-            grid.addWidget(b, i // 6, i % 6)
+            content_widget = QWidget()
+            grid = QGridLayout(content_widget)
             
+            # Load remembered collapsed state (Default to True/Visible)
+            states = self.settings.get("collapsed_states", {})
+            is_visible = states.get(cat_name, True)
+            content_widget.setVisible(is_visible)
+            header.setText(f"{'▼' if is_visible else '▶'} {cat_name.upper()}")
+        
+            for i, st in enumerate(items):
+                b = QPushButton()
+                b.setFixedSize(p_size, p_size)
+                # b.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
+
+                # 1. THE ICON (Fills the whole 90x90 square)
+                img = QLabel(b)
+                img.setFixedSize(p_size, p_size)
+                img.setProperty("is_icon", True) # TAG THIS AS AN ICON
+                img.setScaledContents(True)
+                path = resource_path(st['icon'])
+                if os.path.exists(path):
+                    img.setPixmap(QPixmap(path))
+                else:
+                    img.setText("ICON NOT FOUND")
+                    img.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                img.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+
+                # 2. THE TEXT OVERLAY (Now fills the whole 90x90 square)
+                txt = QLabel(b)
+                txt.setGeometry(0, 0, p_size, p_size)
+                txt.setProperty("is_icon", False)
+                txt.setWordWrap(True)
+                txt.setText(st['name'])
+                txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                txt.setVisible(self.show_text_cb.isChecked())
+                # Increased font size +2pt and made the background cover the whole button
+                txt.setStyleSheet("""
+                    color: white; 
+                    font-weight: bold; 
+                    font-size: 12px; 
+                    background: rgba(0,0,0,120); 
+                    border-radius: 5px;
+                    padding: 2px;
+                """)
+                # txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+
+                b.clicked.connect(lambda ch, s=st: [self.assign(key, s), self.p.close()])
+                grid.addWidget(b, i // 6, i % 6)
+
+            # Toggle Logic
+            header.clicked.connect(lambda ch, c=content_widget, h=header, n=cat_name: self.toggle_picker_section(c, h, n))
+            
+            container_layout.addWidget(header)
+            container_layout.addWidget(content_widget)
+            
+        container_layout.addStretch(1)
         scroll.setWidget(container)
         scroll.setWidgetResizable(True)
         main_layout.addWidget(scroll)
-        self.p.resize(int(603* scale_pct), 1015)
+        self.p.resize(int(635* scale_pct), 800)
         self.p.show()
+
+    def toggle_picker_section(self, content, header, name):
+        is_now_visible = not content.isVisible()
+        content.setVisible(is_now_visible)
+        header.setText(f"{'▼' if is_now_visible else '▶'} {name.upper()}")
+        
+        # Save state to settings
+        if "collapsed_states" not in self.settings:
+            self.settings["collapsed_states"] = {}
+        self.settings["collapsed_states"][name] = is_now_visible
+        self.save_settings()
+
+    def load_picker_state(self, content, header, name):
+        # Default to visible (True) if the key doesn't exist
+        states = self.settings.get("collapsed_states", {})
+        is_visible = states.get(name, True)
+        
+        content.setVisible(is_visible)
+        header.setText(f"{'▼' if is_visible else '▶'} {name.upper()}")    
 
     def assign(self, key, strat):
         self.active_binds[key] = strat
