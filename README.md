@@ -1,4 +1,4 @@
-This entire project was 98% AI generated, but I told it exactly what I wanted, and what should change. The main thing to note here is that I don't know how to code Python. I barely know how to understand code... With that said:
+This entire project is 98% AI generated, but I told it exactly what I wanted, and what should change. The main thing to note here is that I don't know the fine details on how to code Python. I barely know how to understand code that I read... With that said:
 
 
 # HellTux: Helldivers 2 Stratagem Macro Engine
@@ -9,10 +9,10 @@ This entire project was 98% AI generated, but I told it exactly what I wanted, a
 
 ## Main Features
 * **90+ Stratagems:** Includes the latest "Orbital Napalm Barrage," "Sterilizer," and "Emancipator Exosuit."
-* **Categorized UI:** Smart separation between "Standard" and "Mission-Specific" stratagems (Reinforce, Hellbomb, etc.).
+* **Categorized UI:** Smart separation between "Standard", "Warbond" and "Mission-Specific" stratagems (Reinforce, Hellbomb, etc.).
 * **Linux Native:** Built for Wayland, tested on CachyOS.
-* **Smart Binding:** Prevention of duplicate keybinds and easy "Search-to-Bind" workflow.
 * **Low Level:** Uses `python-uinput` to simulate hardware-level keyboard events.
+* **Device Choice:** give you a drop-down to choose which device to listen to for Macro events.
 
 ---
 
@@ -34,6 +34,8 @@ source .venv/bin/activate.fish  # For Fish shell
 
 pip install PySide6 python-uinput
 
+----------------
+
 CRITICAL SETUP: UINPUT Permissions
 
 Because HellTux simulates a keyboard, it needs permission to access /dev/uinput. This is the most important step.
@@ -53,6 +55,9 @@ echo 'KERNEL=="uinput", GROUP="uinput", MODE="0660", OPTIONS+="static_node=uinpu
 3. 🚨 THE REBOOT (Don't skip!)
 
 You MUST reboot your computer now. Udev rules and group assignments do not fully propagate to the kernel session until a fresh boot. If you skip this, the script will fail with a Permission Denied error.
+
+----------------
+
 How to Run
 
     Ensure your icons are in the icons/ folder.
@@ -72,4 +77,4 @@ How to Run
 
 HellTux simulates keypresses. While it does not read game memory or modify game files, always use macros responsibly. The developers are not responsible for any "Accidental" 500KG bombs dropped on teammates.
 
-Developed with ❤️ on CachyOS for the Helldivers community.
+Developed on CachyOS for the Helldivers community.
