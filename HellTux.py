@@ -18,8 +18,7 @@ def resource_path(relative_path):
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-    # Normalize path: replace spaces with underscores and force lowercase
-    normalized = relative_path.replace(" ", "_").lower()
+    normalized = relative_path.replace(" ", "_").lower()# Normalize path: replace spaces with underscores and force lowercase
     return str(os.path.join(base_path, normalized))
 
 # --- 2. ENGINE SETUP ---
@@ -34,7 +33,6 @@ except:
     ui_device = None
 
 # --- 3. MASTER STRATAGEM DATABASE ---
-
 STRATAGEM_DB = {
     "Main": [
         # Patriotic Administration Center
@@ -149,8 +147,7 @@ def download_and_extract():
         found_svgs = list(temp_extract_dir.rglob("*.svg"))
         if len(found_svgs) > 0:
             for svg_path in found_svgs:
-                # Force lowercase AND underscores for absolute consistency
-                clean_name = svg_path.name.replace(" ", "_").lower()
+                clean_name = svg_path.name.replace(" ", "_").lower() # Force lowercase AND underscores for absolute consistency
                 shutil.copy2(svg_path, ICON_DIR / clean_name)
             shutil.rmtree(temp_extract_dir)
             print(f"Assets Synced (Case-Insensitive): {len(found_svgs)} icons.")
@@ -166,7 +163,6 @@ def run_macro(sequence):
 
 # --- 5. MAIN UI ---
 class HellTux(QWidget):
-
     def __init__(self):
         super().__init__()
         download_and_extract()
@@ -176,15 +172,13 @@ class HellTux(QWidget):
                 with open(CONFIG_FILE, 'r') as f:
                     self.settings = json.load(f)
             except Exception as e:
-                print(f"Error loading config: {e}")
+                print(f"Error loading config: {e}") # Debugging
                 self.settings = {}
 
         # 2. Extract binds (so they're available for buttons)
-        # Handle the case where the file might be the old format or new format
         self.active_binds = self.settings.get("binds", self.settings) 
         if "binds" not in self.settings:
-            # If it's an old file, wrap it in the new structure
-            self.settings = {"binds": self.active_binds, "last_device": ""}
+            self.settings = {"binds": self.active_binds, "last_device": ""} # If it's an old file, wrap it in the new structure
         self.initUI()
         signals.chat_toggled.connect(self.update_status_ui)
         threading.Thread(target=self.evdev_listener, daemon=True).start()
@@ -200,8 +194,7 @@ class HellTux(QWidget):
         
         # 1. Checkbox on its own row
         self.show_text_cb = QCheckBox("SHOW TEXT")
-        # Load saved preference (Default to True if not found)
-        self.show_text_cb.setChecked(self.settings.get("show_names", True))
+        self.show_text_cb.setChecked(self.settings.get("show_names", True)) # Load saved preference (Default to True if not found)
         self.show_text_cb.setStyleSheet("color: #FFD700; font-weight: bold; border: none; margin-bottom: 5px;")
         self.show_text_cb.stateChanged.connect(self.toggle_text_visibility)
         top_container.addWidget(self.show_text_cb)
@@ -234,7 +227,7 @@ class HellTux(QWidget):
         
         layout.addLayout(top_container)
 
-        # --- STATUS & REINFORCE ---
+        # --- STATUS ---
         self.status = QLabel("DEMOCRACY READY")
         self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status.setStyleSheet("color: #0F0; font-weight: bold; border: none; font-size: 16px;")
@@ -254,9 +247,8 @@ class HellTux(QWidget):
             btn.setFixedSize(100, 100)
             btn.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
             
-            # Enable Right-Click
-            btn.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-            btn.customContextMenuRequested.connect(lambda pos, key=k: self.clear_single_bind(key))
+            btn.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu) # Enable Right-Click
+            btn.customContextMenuRequested.connect(lambda pos, key=k: self.clear_single_bind(key)) # Right Click to clear binding
             
             # --- Layering (Icon and Text) ---
             bg = QLabel(btn)
@@ -328,15 +320,12 @@ class HellTux(QWidget):
             }
         """)
         
-        # Update the main window constraints to allow shrinking
         self.setMinimumSize(0, 0)
-        self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum) # Update the main window constraints to allow shrinking
 
-        # Populate with devices
-        self.refresh_devices()
+        self.refresh_devices() # Populate with devices
 
-        # LOAD SAVED DEVICE
-        saved_dev = self.settings.get('last_device', "")
+        saved_dev = self.settings.get('last_device', "") # LOAD SAVED DEVICE
         if saved_dev and isinstance(saved_dev, str):
             index = self.dev_selector.findText(saved_dev)
             if index == -1: 
@@ -388,21 +377,16 @@ class HellTux(QWidget):
         self.save_settings()
 
     def toggle_text_visibility(self):
-        # Determine visibility based on checkbox state
-        is_visible = self.show_text_cb.isChecked()
+        is_visible = self.show_text_cb.isChecked() # Determine visibility based on checkbox state
         
-        # Loop through all 1-9 buttons and toggle their text layer
         for btn in self.btns.values():
-            btn.txt.setVisible(is_visible)
+            btn.txt.setVisible(is_visible) # Loop through all 1-9 buttons and toggle their text layer
 
-        # Target ONLY the labels in the picker that are meant for text
         if hasattr(self, 'p') and self.p.isVisible():
-            for label in self.p.findChildren(QLabel):
-                # Only hide if it's NOT marked as an icon
-                if label.property("is_icon") != True:
+            for label in self.p.findChildren(QLabel): # Target ONLY the labels in the picker that are meant for text
+                if label.property("is_icon") != True: # Only hide if it's NOT marked as an icon
                     label.setVisible(is_visible)
-        # Automatically save this preference
-        self.save_settings()
+        self.save_settings() # Automatically save this preference
 
     def refresh_devices(self):
         self.dev_map = {}
@@ -411,27 +395,20 @@ class HellTux(QWidget):
                 d = InputDevice(p)
                 caps = d.capabilities()
                 name = d.name.lower()
-                
-                # Check for standard keyboard keys (like A-Z or Numpad)
-                # Keyboards usually have KEY_A (30) or KEY_KP1 (79)
-                has_kb_keys = False
+                has_kb_keys = False # Check for standard keyboard keys (like A-Z or Numpad)
                 if e.EV_KEY in caps:
-                    key_codes = caps[e.EV_KEY]
-                    # Check if it has a broad range of keys or specific numpad keys
-                    if 30 in key_codes or 79 in key_codes or len(key_codes) > 40:
+                    key_codes = caps[e.EV_KEY] # Keyboards usually have KEY_A (30) or KEY_KP1 (79)
+                    if 30 in key_codes or 79 in key_codes or len(key_codes) > 40: # Check if it has a broad range of keys or specific numpad keys
                         has_kb_keys = True
 
-                # Check for mouse movement
-                has_mouse = e.EV_REL in caps or e.EV_ABS in caps
+                has_mouse = e.EV_REL in caps or e.EV_ABS in caps # Check for mouse movement
                 
-                # Block known "non-input" noise
-                ignored = ["mic", "audio", "mono", "speaker", "headset", "webcam", "video", "power", "button"]
+                ignored = ["mic", "audio", "mono", "speaker", "headset", "webcam", "video", "power", "button"] # Block known "non-input" noise
                 if any(x in name for x in ignored):
                     continue
 
                 if has_kb_keys or has_mouse:
-                    # Append the path to the name to differentiate identical K70s
-                    display_name = f"{d.name} ({p.split('/')[-1]})"
+                    display_name = f"{d.name} ({p.split('/')[-1]})" # Append the path to the name to differentiate identical-named Keyboards
                     self.dev_map[display_name] = p
             except:
                 continue
@@ -440,11 +417,9 @@ class HellTux(QWidget):
         self.dev_selector.addItems(sorted(self.dev_map.keys()))
 
     def restart_listener(self):
-        # Setting a flag to break the current loop
-        self.listening = False
+        self.listening = False # Setting a flag to break the current loop
         time.sleep(0.2)
 
-        # SAVE DEVICE TO SETTINGS
         current_name = self.dev_selector.currentText()
         if current_name:
             self.settings['last_device'] = current_name
@@ -480,7 +455,7 @@ class HellTux(QWidget):
                                 print(f"💬 Chat Mode: {'ON' if is_chatting else 'OFF'}")
                                 continue # Don't process macros while toggling
                                 
-                        elif sc == 1: # Esc
+                        elif sc == 1: # Esc key
                             if is_chatting:
                                 is_chatting = False
                                 signals.chat_toggled.emit(False)
@@ -503,14 +478,11 @@ class HellTux(QWidget):
     def clear_single_bind(self, key):
         if key in self.active_binds:
             del self.active_binds[key]
-            # Save the updated config
             with open(CONFIG_FILE, 'w') as f:
-                # json.dump(self.active_binds, f)
-                self.save_settings()
+                self.save_settings() # Save the updated config
             
-            # Reset visuals for this button
             btn = self.btns[key]
-            btn.bg.clear()
+            btn.bg.clear() # Reset visuals for this button
             btn.txt.setText(f"{key}\nEMPTY")
             btn.txt.setGraphicsEffect(None) # Remove the text outline
             btn.txt.setStyleSheet("color: white; font-weight: bold; font-size: 12px; background: transparent;")
@@ -538,15 +510,13 @@ class HellTux(QWidget):
         container_layout = QVBoxLayout(container)
         container_layout.setSpacing(2) # Tighten space between categories
 
-        # Apply the current scale to picker buttons
-        scale_pct = self.scale_slider.value() / 100
+        scale_pct = self.scale_slider.value() / 100 # Apply the current scale to picker buttons
         p_size = int(90 * scale_pct)
 
         self.picker_sections = {}
 
         for cat_name, items in STRATAGEM_DB.items():
-            # Section Header
-            header = QPushButton(f"▼ {cat_name.upper()}")
+            header = QPushButton(f"▼ {cat_name.upper()}") # Section Header
             header.setStyleSheet("""
                 QPushButton { 
                     text-align: left; color: #FFD700; font-weight: bold; 
@@ -557,8 +527,7 @@ class HellTux(QWidget):
             content_widget = QWidget()
             grid = QGridLayout(content_widget)
             
-            # Load remembered collapsed state (Default to True/Visible)
-            states = self.settings.get("collapsed_states", {})
+            states = self.settings.get("collapsed_states", {}) # Load remembered collapsed state (Default to True/Visible)
             is_visible = states.get(cat_name, True)
             content_widget.setVisible(is_visible)
             header.setText(f"{'▼' if is_visible else '▶'} {cat_name.upper()}")
@@ -566,7 +535,6 @@ class HellTux(QWidget):
             for i, st in enumerate(items):
                 b = QPushButton()
                 b.setFixedSize(p_size, p_size)
-                # b.setStyleSheet("background: #111; border: 1px solid #333; border-radius: 5px;")
 
                 # 1. THE ICON (Fills the whole 90x90 square)
                 img = QLabel(b)
@@ -589,7 +557,6 @@ class HellTux(QWidget):
                 txt.setText(st['name'])
                 txt.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 txt.setVisible(self.show_text_cb.isChecked())
-                # Increased font size +2pt and made the background cover the whole button
                 txt.setStyleSheet("""
                     color: white; 
                     font-weight: bold; 
@@ -598,13 +565,11 @@ class HellTux(QWidget):
                     border-radius: 5px;
                     padding: 2px;
                 """)
-                # txt.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
                 b.clicked.connect(lambda ch, s=st: [self.assign(key, s), self.p.close()])
                 grid.addWidget(b, i // 6, i % 6)
 
-            # Toggle Logic
-            header.clicked.connect(lambda ch, c=content_widget, h=header, n=cat_name: self.toggle_picker_section(c, h, n))
+            header.clicked.connect(lambda ch, c=content_widget, h=header, n=cat_name: self.toggle_picker_section(c, h, n)) # Toggle Logic
             
             container_layout.addWidget(header)
             container_layout.addWidget(content_widget)
@@ -621,16 +586,14 @@ class HellTux(QWidget):
         content.setVisible(is_now_visible)
         header.setText(f"{'▼' if is_now_visible else '▶'} {name.upper()}")
         
-        # Save state to settings
         if "collapsed_states" not in self.settings:
             self.settings["collapsed_states"] = {}
         self.settings["collapsed_states"][name] = is_now_visible
-        self.save_settings()
+        self.save_settings() # Save state to settings
 
     def load_picker_state(self, content, header, name):
-        # Default to visible (True) if the key doesn't exist
         states = self.settings.get("collapsed_states", {})
-        is_visible = states.get(name, True)
+        is_visible = states.get(name, True) # Default to visible (True) if the key doesn't exist
         
         content.setVisible(is_visible)
         header.setText(f"{'▼' if is_visible else '▶'} {name.upper()}")    
@@ -639,7 +602,6 @@ class HellTux(QWidget):
         self.active_binds[key] = strat
         self.apply_visual(self.btns[key], key, strat)
         with open(CONFIG_FILE, 'w') as f: 
-            # json.dump(self.active_binds, f)
             self.save_settings()
 
     def apply_visual(self, btn, key, strat):
@@ -693,12 +655,10 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     
     # --- WAYLAND ICON SETTINGS ---
-    # Points to icons/commander_tux-128.png
-    app_icon_path = resource_path("icons/commander_tux-128.png")
+    app_icon_path = resource_path("icons/commander_tux-128.png") # Points to icons/commander_tux-128.png image
     if os.path.exists(app_icon_path):
         app.setWindowIcon(QIcon(app_icon_path))
-        # Ensure Wayland recognizes the app for taskbar grouping
-        app.setDesktopFileName("helltux") 
+        app.setDesktopFileName("helltux") # Ensure Wayland recognizes the app for taskbar grouping
 
     win = HellTux()
     win.show()
