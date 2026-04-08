@@ -104,7 +104,7 @@ STRATAGEM_DB = {
         {"name": "Directional Shield", "icon": "icons/Directional_Shield.svg", "seq": [DN, LT, RT, UP, UP]},
         {"name": "Flame Sentry", "icon": "icons/Flame_Sentry.svg", "seq": [DN, UP, RT, DN, DN]},
         {"name": "Laser Sentry", "icon": "icons/Laser_Sentry.svg", "seq": [DN, UP, LT, UP, RT, UP]},
-        {"name": "Warp Pack", "icon": "icons/Warp_Pack.svg", "seq": [RT, LT, UP, UP, DN]},
+        {"name": "Warp Pack", "icon": "icons/Warp_Pack.svg", "seq": [DN, LT, RT, DN, LT, RT]},
         {"name": "Speargun", "icon": "icons/Speargun.svg", "seq": [DN, DN, LT, RT, DN]},
         {"name": "Maxigun", "icon": "icons/Maxigun.svg", "seq": [DN, LT, UP, RT, RT]}
     ],
@@ -452,7 +452,7 @@ class HellTux(QWidget):
                         if sc == 28: # ENTER Key
                                 is_chatting = not is_chatting
                                 signals.chat_toggled.emit(is_chatting)
-                                print(f"💬 Chat Mode: {'ON' if is_chatting else 'OFF'}")
+                                print(f"Chat Mode: {'ON' if is_chatting else 'OFF'}")
                                 continue # Don't process macros while toggling
                                 
                         elif sc == 1: # Esc key
